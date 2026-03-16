@@ -1,14 +1,12 @@
 [flake8]
+# Игнорируем вообще все ошибки оформления (E) и предупреждения (W)
 ignore =
-    F401,
-    E501,
-    W291,
-    W292,
-    W293,
-    E301,
-    E261
+    E,
+    W,
+    F401
 exclude =
     */migrations/,
     venv/,
     env/,
-    tests/
+    tests/,
+    manage.py
