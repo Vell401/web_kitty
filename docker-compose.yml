@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  # База данных
+  postgres:
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  # Бэкенд приложение
+  backend:
+    build: ./backend/
+    env_file: .env
+    depends_on:
+      - postgres
+    volumes:
+      - static:/app/static/
+      - media:/app/media/
+
+  # Фронтенд
+  frontend:
+    build: ./frontend/
+    command: cp -r /app/build/. /static/
+    volumes:
+      - static:/static/
+
+  # Nginx (Gateway)
+  gateway:
+    build: ./nginx/
+    ports:
+      - "9000:80"
+    volumes:
+      - static:/staticfiles/
+      - media:/media/
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  pg_data:
+  static:
+  media:

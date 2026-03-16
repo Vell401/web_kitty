@@ -1,0 +1,23 @@
+# Используем официальный runtime Python (slim версия для экономии места)
+FROM python:3.9-slim
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Устанавливаем системные зависимости для сборки psycopg2 (нужен для Postgres)
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Копируем и устанавливаем зависимости Python
+COPY requirements.txt .
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt --no-cache-dir
+
+# Копируем остальной код приложения
+COPY . .
+
+# Запускаем Gunicorn на порту 8000
+# kittygram_backend.wsgi — это путь к точке входа в проект
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "kittygram_backend.wsgi"]
